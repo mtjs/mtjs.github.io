@@ -102,15 +102,15 @@
     <h3>总体流程介绍</h3>
     <p>增量更新依赖于localstorage,所以浏览器必须支持localstorage。android和ios两大平台目前都支持。</p>
     <p>增量更新流程如下图所示：</p>
-    <p><img src='img/storeinc.png'></p>
+    <p><img src='https://mtjs.github.io/img/storeinc.png'></p>
     <p>localstorage里面存储的上个版本的js内容和版本号，当本次版本号和上次版本号不一致的时候，mt拼接出增量文件url去拉取增量文件，并和上个版本的js内容合并生成新版本内容。整个方案得核心在于增量文件得计算和合并，接下来介绍mt支持的2种增量更新算法。</p>
     <h3>基于chunk的增量更新算法</h3>
     <p>在mt1.0里面，增量文件的计算和增量文件和旧版本内容的合并主要基于chunk算法，这个算法的原理是通过将js分块并滚动比较取得两个版本内容，获取增量文件。具体得算法设计请看下面这个PDF:</p>
-    <a href='img/mt1.pdf' target="_blank"><h4>mt1.0js增量更新技术实现</h4></a>
+    <a href='https://mtjs.github.io/img/mt1.pdf' target="_blank"><h4>mt1.0js增量更新技术实现</h4></a>
 
     <h3>基于编辑距离计算的增量更新算法</h3>
     <p>mt1.0的chunk算法基于分块计算，增量更新的精确度依赖于chunk的大小，在实际使用中总是会有不少代码需要冗余下载，为此在mt2.0里面增加路基于编辑距离计算的增量更新算法，具体的实现方案的PDF如下：</p>
-    <a href='img/mt2.pdf' target="_blank"><h4>mt2.0js基于编辑距离计算的增量更新技术实现</h4></a>
+    <a href='https://mtjs.github.io/img/mt2.pdf' target="_blank"><h4>mt2.0js基于编辑距离计算的增量更新技术实现</h4></a>
 
     <h3>mixdiff:基于编辑距离计算，chunk两种算法的增量更新</h3>
     <p>编辑距离计算可以精确到字符，但是需要用一个矩阵来存储字符，本身会占用很大的内存，基本上比较难于用在生产环境里，
@@ -118,9 +118,9 @@
         mixdif其实就是：对于比较字符串比较短的字符用lcs来计算增量文件，对于比较长的字符串用chunkdiff来找出2个字符串的最大公共子字符串，然后用这个字符串将新旧2个字符串都切成前缀、公共子串、后缀。
         然后分别用2个前缀，后缀为参数递归调用mixdiff来实现增量文件计算的方式。流程图如下：
     </p>
-    <img src="img/mixdiff_flow.png">
+    <img src="https://mtjs.github.io/img/mixdiff_flow.png">
     <p>程序流程图如下：</p>
-    <img src="img/mixdiff_codeflow.png">
+    <img src="https://mtjs.github.io/img/mixdiff_codeflow.png">
 
 </section>
 
@@ -177,11 +177,11 @@
 
         </pre>
         <p>我们看下网络请求：</p>
-        <img src="img/nocombo.png">
+        <img src="https://mtjs.github.io/img/nocombo.png">
         <p>可以看到base.js,p1.js,p2.js,p3.js是分开下载的，说明没有走combo   </p>
 
         <p>然后设置了combo的cb为true,说明走combo. 我们看下网络请求：</p>
-        <img src="img/hotcombo.png">
+        <img src="https://mtjs.github.io/img/hotcombo.png">
         <p>可以看到base.js,p1.js是分开下载的，而p2.js,p3.js是一起下载的，这是因为mt2.0自己分析了依赖，把某个模块共同依赖一起下载了，这个例子里面p1依赖了p2,p3两个模块 所以p2,p3被一起下载了，这就是热combo!  </p>
 
         <p>这时候我们想,我想让p1,p2,p3一次就下载了，怎么弄？很简单，我们只要设置combo.conf为如下: </p>
@@ -198,7 +198,7 @@
 
         </pre>
         <p>我们看下网络请求：</p>
-        <img src="img/halfhotcombo.png">
+        <img src="https://mtjs.github.io/img/halfhotcombo.png">
         <p>ok，p1,p2,p3一次就下载了！！，这就是半热combo,需要配置一下conf.        </p>
     </section>
 
@@ -321,10 +321,10 @@
     <h3>效果演示</h3>
 
     <p>打开chrome(必须支持localstorage),输入地址:http://localhost:6600/test.html,可以看到请求的是全量的js</p>
-    <img src="img/02full.png">
+    <img src="https://mtjs.github.io/img/02full.png">
     <p></p>
     <p>本地存储里的内容是2014053000002版本的:</p>
-    <img src="img/02local.png">
+    <img src="https://mtjs.github.io/img/02local.png">
     <p><p>
     <p>接着我们修改p2.js代码，加上"lcs"这3个字 ：</p>
      <pre class=”prettyprint linenums Lang-js”>
@@ -338,10 +338,10 @@
     <pre>node ../../js/mtbuild.js test.html build.conf  lcs   </pre>
    <p> 这时候生成2014053000003版本代码，打开chrome(必须支持localstorage), 输入地址:http://localhost:6600/test.html,这时候可以看到请求的内容是增量的,并且精确到了字符级别: </p>
     <p></p>
-    <img src="img/lcs.png">
+    <img src="https://mtjs.github.io/img/lcs.png">
     <p>我们来看下同样是这个修改，如果我们走chunk算法，会是什么样子。 我们需要重新走一遍上边的流程，但是把build.sh命令的lcs参数改成chunk,启动storeincServer时的lcs也改成chunk, 这里就不罗嗦步骤了，我们直接看看走chunk是的网络请求：</p>
     <p></p>
-    <img src="img/chunk.png">
+    <img src="https://mtjs.github.io/img/chunk.png">
     <p></p>
     <p>相对chunk算法，基于lcs算法的能更加精确</p>
 
@@ -415,7 +415,7 @@
     <div class="whouse">
     <a href="http://infoapp.3g.qq.com/g/s?aid=nbasearch&amp;icfa=home_touch&amp;iarea=98&amp;i_f=235#home" >
         <div class="img-tit" >NBA</div>
-        <img pl="1" alt="nba" src="http://3glogo.gtimg.com/wap30/info/info5/img/app/NBA.jpg">
+        <img pl="1" alt="nba" src="http://3glogo.gtimg.com/wap30/info/info5/https://mtjs.github.io/img/app/NBA.jpg">
 
     </a>
     </div>
